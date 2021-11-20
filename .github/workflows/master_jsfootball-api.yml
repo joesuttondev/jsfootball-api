@@ -54,4 +54,4 @@ jobs:
           app-name: 'jsfootball-api'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FFB7717BC04B48AC9DFCE54EF9C2059E }}
-          package: .
+          package: '${{ env.WEBAPP_PACKAGE_PATH }}/jsfootball-api/'
