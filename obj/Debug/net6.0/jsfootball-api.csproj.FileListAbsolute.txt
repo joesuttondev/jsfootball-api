@@ -49,3 +49,15 @@ C:\source\football\jsfootball-api\bin\Debug\net6.0\runtimes\unix\lib\netcoreapp3
 C:\source\football\jsfootball-api\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\source\football\jsfootball-api\bin\Debug\net6.0\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 C:\source\football\jsfootball-api\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
+C:\source\football\jsfootball-api\bin\Debug\net6.0\Microsoft.Build.dll
+C:\source\football\jsfootball-api\bin\Debug\net6.0\Microsoft.Build.Framework.dll
+C:\source\football\jsfootball-api\bin\Debug\net6.0\Microsoft.Build.Tasks.Core.dll
+C:\source\football\jsfootball-api\bin\Debug\net6.0\Microsoft.Build.Utilities.Core.dll
+C:\source\football\jsfootball-api\bin\Debug\net6.0\dotnet-ef.dll
+C:\source\football\jsfootball-api\bin\Debug\net6.0\Microsoft.VisualStudio.Web.CodeGeneration.Contracts.dll
+C:\source\football\jsfootball-api\bin\Debug\net6.0\dotnet-aspnet-codegenerator.dll
+C:\source\football\jsfootball-api\bin\Debug\net6.0\NuGet.Frameworks.dll
+C:\source\football\jsfootball-api\bin\Debug\net6.0\System.Xml.XPath.XmlDocument.dll
+C:\source\football\jsfootball-api\bin\Debug\net6.0\Humanizer.dll
+C:\source\football\jsfootball-api\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Design.dll
+C:\source\football\jsfootball-api\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Relational.dll

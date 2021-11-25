@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using jsfootball_api.Models;
+using Microsoft.EntityFrameworkCore.Design;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<TeamsContext>(options => 
+	options.UseCosmos(builder.Configuration.GetValue<string>("CosmosEndpoint"),
+	builder.Configuration.GetValue<string>("CosmosKey"),
+	"Football"));
+builder.Services.AddDbContext<FixturesContext>(options => 
 	options.UseCosmos(builder.Configuration.GetValue<string>("CosmosEndpoint"),
 	builder.Configuration.GetValue<string>("CosmosKey"),
 	"Football"));
