@@ -1,11 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using jsfootball_api.Models;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
+using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace jsfootball_api.Controllers
 {
@@ -13,32 +13,70 @@ namespace jsfootball_api.Controllers
     [ApiController]
     public class FixturesController : ControllerBase
     {
-         private readonly FixturesContext _context;
+        private readonly IDocumentClient _documentClient;
+        readonly String databaseId;
+        readonly String collectionId;
 
-        public FixturesController(FixturesContext context)
+        public FixturesController(IDocumentClient documentClient)
         {
-            _context = context;
+              _documentClient = documentClient;
+
+            databaseId = "Football";
+            collectionId = "Fixtures"; 
+
+            BuildCollection().Wait();
+        }
+ private async Task BuildCollection()
+        {
+            await _documentClient.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId });
+            await _documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseId),
+                new DocumentCollection { Id = collectionId });
         }
 
-           // GET: api/Fixtures
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Fixture>>> GetFixtures()
-        {             
-            return await _context.Fixtures.ToListAsync();
+        public IQueryable<Fixture> Get()
+        {
+            return _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
+                new FeedOptions { MaxItemCount = 20 });
         }
 
-        // GET: api/Teams/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Fixture>> GetFixture(string id)
+        public IQueryable<Fixture> Get(string id)
         {
-            var fixture = await _context.Fixtures.FindAsync(id);
+            return _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
+                new FeedOptions { MaxItemCount = 1 }).Where((i) => i.id == id);
+        }
 
-            if (fixture == null)
-            {
-                return NotFound();
-            }
+        [Route("team/{teamid}")]
+        [Route("~/api/teams/{teamid}/fixtures")]
+        public IQueryable<Fixture> GetTeamFixtures(string teamid, [FromQuery] string status)
+        {
+            return _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
+                new FeedOptions { MaxItemCount = 1 }).Where((i) => (i.homeTeam.id == teamid || i.awayTeam.id == teamid));
+        }
 
-            return fixture;
-        }        
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] Fixture item) 
+        {
+            var response = await _documentClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),item);
+            return Ok();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(string id, [FromBody] Fixture item) 
+        {
+            await _documentClient.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(databaseId, collectionId, id),
+                item);
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            await _documentClient.DeleteDocumentAsync(UriFactory.CreateDocumentUri(databaseId, collectionId, id));
+            return Ok();
+        }
+
+
     }
 }

@@ -38,37 +38,17 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
-            "Microsoft.EntityFrameworkCore.Design": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
+            "Microsoft.Azure.DocumentDB.Core": {
               "target": "Package",
-              "version": "[6.0.0, )"
-            },
-            "Microsoft.EntityFrameworkCore.Tools": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[6.0.0, )"
-            },
-            "Microsoft.EntityFrameworkCore.Tools.DotNet": {
-              "target": "Package",
-              "version": "[2.0.3, )"
-            },
-            "Microsoft.VisualStudio.Web.CodeGeneration.Tools": {
-              "target": "Package",
-              "version": "[2.0.4, )"
+              "version": "[2.16.2, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.2.3, )"
             },
-            "microsoft.entityframeworkcore": {
+            "microsoft.azure.cosmos": {
               "target": "Package",
-              "version": "[6.0.0, )"
-            },
-            "microsoft.entityframeworkcore.cosmos": {
-              "target": "Package",
-              "version": "[6.0.0, )"
+              "version": "[3.23.0, )"
             }
           },
           "imports": [

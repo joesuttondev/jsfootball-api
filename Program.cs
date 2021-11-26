@@ -1,6 +1,6 @@
-using Microsoft.EntityFrameworkCore;
-using jsfootball_api.Models;
-using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,16 +10,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<TeamsContext>(options => 
-	options.UseCosmos(builder.Configuration.GetValue<string>("CosmosEndpoint"),
-	builder.Configuration.GetValue<string>("CosmosKey"),
-	"Football"));
-builder.Services.AddDbContext<FixturesContext>(options => 
-	options.UseCosmos(builder.Configuration.GetValue<string>("CosmosEndpoint"),
-	builder.Configuration.GetValue<string>("CosmosKey"),
-	"Football"));
+builder.Services.AddSingleton<IDocumentClient>(x => new DocumentClient(new Uri(builder.Configuration.GetValue<string>("CosmosEndpoint")), builder.Configuration.GetValue<string>("CosmosKey")));
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
