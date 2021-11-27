@@ -33,12 +33,12 @@ namespace jsfootball_api.Controllers
                 new DocumentCollection { Id = collectionId });
         }
 
-        [HttpGet]
-        public IQueryable<Fixture> Get()
-        {
-            return _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
-                new FeedOptions { MaxItemCount = 20 });
-        }
+        // [HttpGet]
+        // public IQueryable<Fixture> Get()
+        // {
+        //     return _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
+        //         new FeedOptions { MaxItemCount = 20 });
+        // }
 
         [HttpGet("{id}")]
         public IQueryable<Fixture> Get(string id)
@@ -49,10 +49,12 @@ namespace jsfootball_api.Controllers
 
         [Route("team/{teamid}")]
         [Route("~/api/teams/{teamid}/fixtures")]
-        public IQueryable<Fixture> GetTeamFixtures(string teamid, [FromQuery] string status)
+        public IQueryable<Fixture> GetTeamFixtures(string teamid, string status)
         {
+            if (string.IsNullOrEmpty(status)) status = "";
             return _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
-                new FeedOptions { MaxItemCount = 1 }).Where((i) => (i.homeTeam.id == teamid || i.awayTeam.id == teamid));
+                new FeedOptions { MaxItemCount = 1 })
+                .Where((i) => ((string.IsNullOrEmpty(status) || i.status.ToLower().Equals(status.ToLower())) && (i.homeTeam.id == teamid || i.awayTeam.id == teamid)));
         }
 
         [HttpPost]
