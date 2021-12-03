@@ -87,22 +87,6 @@ namespace jsfootball_api.Controllers
             positions.Select((p, i) => {p.Position = i+1; return p;}).ToList();
 
             return positions.OrderByDescending(p => p.Points).ThenByDescending(p => p.GoalDifference).ThenByDescending(positions => positions.For).AsQueryable<LeaguePosition>();
-        }
-
-        [HttpGet("{id}")]
-        public IQueryable<Fixture> Get(string id)
-        {
-            return _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
-                new FeedOptions { MaxItemCount = 1 }).Where((i) => i.id == id);
-        }
-
-        [Route("team/{teamid}")]
-        [Route("~/api/teams/{teamid}/fixtures")]
-        public IQueryable<Fixture> GetTeamFixtures(string teamid, string status = "")
-        {
-            //if (string.IsNullOrEmpty(status)) status = "";
-            return _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId))
-                .Where((i) => ((string.IsNullOrEmpty(status) || i.status.ToLower().Equals(status.ToLower())) && (i.homeTeam.id == teamid || i.awayTeam.id == teamid)));
-        }
+        }      
     }
 }

@@ -33,12 +33,11 @@ namespace jsfootball_api.Controllers
                 new DocumentCollection { Id = collectionId });
         }
 
-
-        [HttpGet("{id}")]
-        public IQueryable<Fixture> Get(string id)
+        [HttpGet]
+        public IQueryable<Fixture> Get(string status = "")
         {
             return _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
-                new FeedOptions { MaxItemCount = 1 }).Where((i) => i.id == id);
+                new FeedOptions { MaxItemCount = 1 }).Where((i) => string.IsNullOrEmpty(status) || i.status.ToLower().Equals(status.ToLower()));
         }
 
         [Route("team/{teamid}")]
