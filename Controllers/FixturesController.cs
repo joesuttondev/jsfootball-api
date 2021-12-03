@@ -16,6 +16,7 @@ namespace jsfootball_api.Controllers
         private readonly IDocumentClient _documentClient;
         readonly String databaseId;
         readonly String collectionId;
+        readonly String teamsCollectionId;
 
         public FixturesController(IDocumentClient documentClient)
         {
@@ -23,6 +24,7 @@ namespace jsfootball_api.Controllers
 
             databaseId = "Football";
             collectionId = "Fixtures";
+            teamsCollectionId = "Teams";
 
             BuildCollection().Wait();
         }
@@ -36,8 +38,10 @@ namespace jsfootball_api.Controllers
         [HttpGet]
         public IQueryable<Fixture> Get(string status = "")
         {
-            return _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
+            var fixtures = _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
                 new FeedOptions { MaxItemCount = 1 }).Where((i) => string.IsNullOrEmpty(status) || i.status.ToLower().Equals(status.ToLower()));
+            IncludeTeamCrests(ref fixtures);
+            return fixtures;
         }
 
         [Route("team/{teamid}")]
@@ -45,9 +49,18 @@ namespace jsfootball_api.Controllers
         public IQueryable<Fixture> GetTeamFixtures(string teamid, string status = "")
         {
             //if (string.IsNullOrEmpty(status)) status = "";
-            return _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
+            var fixtures = _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
                 new FeedOptions { MaxItemCount = 1 })
                 .Where((i) => ((string.IsNullOrEmpty(status) || i.status.ToLower().Equals(status.ToLower())) && (i.homeTeam.id == teamid || i.awayTeam.id == teamid)));
+            IncludeTeamCrests(ref fixtures);
+            return fixtures;
+        }
+
+        private void IncludeTeamCrests(ref IQueryable<Fixture> fixtures)
+        {
+            var teams = _documentClient.CreateDocumentQuery<Team>(UriFactory.CreateDocumentCollectionUri(databaseId, teamsCollectionId)).ToDictionary(t => t.id, t => t);
+
+            fixtures = fixtures.ToList().Select(f => { f.homeTeam.crestUrl = teams[f.homeTeam.id].crestUrl; f.awayTeam.crestUrl = teams[f.awayTeam.id].crestUrl; return f; }).AsQueryable<Fixture>();
         }
     }
 }
