@@ -38,18 +38,27 @@ namespace jsfootball_api.Controllers
         [HttpGet]
         public IQueryable<Fixture> Get(string status = "")
         {
-            return _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
+            var fixtures = _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
                 new FeedOptions { MaxItemCount = 1 }).Where((i) => string.IsNullOrEmpty(status) || i.status.ToLower().Equals(status.ToLower()));
-
+            InjectTeam(ref fixtures);
+            return fixtures;
         }
 
         [Route("team/{teamid}")]
         [Route("~/api/teams/{teamid}/fixtures")]
         public IQueryable<Fixture> GetTeamFixtures(string teamid, string status = "")
         {
-            return _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
+            var fixtures = _documentClient.CreateDocumentQuery<Fixture>(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId),
                 new FeedOptions { MaxItemCount = 1 })
                 .Where((i) => ((string.IsNullOrEmpty(status) || i.status.ToLower().Equals(status.ToLower())) && (i.homeTeam.id == teamid || i.awayTeam.id == teamid)));
-        }      
+            InjectTeam(ref fixtures);
+            return fixtures;
+        }
+
+        private void InjectTeam(ref IQueryable<Fixture> fixtures)
+        {
+            var teams = _documentClient.CreateDocumentQuery<Team>(UriFactory.CreateDocumentCollectionUri(databaseId, teamsCollectionId)).ToDictionary(t => t.id, t => t);
+            fixtures = fixtures.ToList().Select(f => { f.homeTeam = teams[f.homeTeam.id]; f.awayTeam = teams[f.awayTeam.id]; return f; }).AsQueryable<Fixture>();
+        }
     }
 }
